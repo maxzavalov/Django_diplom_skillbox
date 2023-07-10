@@ -20,6 +20,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('sing_in/', SingInView.as_view, name='login'),
+    # path('sing_in/', SingInView.as_view, name='login'),
     path("", include("frontend.urls"))
 ]
