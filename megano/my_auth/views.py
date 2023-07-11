@@ -1,13 +1,11 @@
 import json
-
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render
 from rest_framework.views import APIView
-
+from serilizers import ProfileSerializer, ChangePWDSerializer
 from my_auth.models import Profile
 
 
@@ -54,3 +52,53 @@ class SignUpView(APIView):
 def signOut(request):
     logout(request)
     return HttpResponse(status=200)
+
+
+class ProfileApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def post(self, request):
+        profile = Profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePWDView(APIView):
+    """
+    Представление для смены пароля пользователя
+    """
+    serializer_class = ChangePWDSerializer
+    model = User
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        obj = self.request.user
+        return obj
+
+    def post(self, request):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            if not self.object.check_password(serializer.data.get("currentPassword")):
+                return Response({"currentPassword": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            self.object.set_password(serializer.data.get("newPassword"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
