@@ -102,3 +102,18 @@ class ChangePWDView(APIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeAvatarView(APIView):
+    """Представление для изменения аватара пользователя"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        profile = Profile.objects.get(user=request.user)
+        file = request.FILES["avatar"]
+        if file is not None:
+            profile.avatar = request.FILES["avatar"]
+            profile.save()
+            return Response(status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
