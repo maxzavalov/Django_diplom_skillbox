@@ -24,6 +24,6 @@ urlpatterns = [
     path("sign-up/", SignUpView.as_view(), name="register"),
     path('sign-out/', signOut, name='logout'),
     path("profile/", ProfileApiView.as_view(), name="profile"),
-    path("profile/password/", ProfileApiView.as_view(), name="change_pwd"),
+    path("profile/password/", ChangePWDView.as_view(), name="change_pwd"),
     path("", include("frontend.urls"))
 ]
