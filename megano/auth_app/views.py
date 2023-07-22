@@ -6,7 +6,7 @@ from rest_framework import status, permissions
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from .serializers import ProfileSerializer, ChangePWDSerializer
-from my_auth.models import Profile
+from auth_app.models import Profile
 
 
 class SignInView(APIView):
@@ -40,7 +40,7 @@ class SignUpView(APIView):
 
         try:
             user = User.objects.create_user(username=username, password=password)
-            profile = Profile.objects.create(user=user, first_name=name)
+            profile = Profile.objects.create(user=user, fullName=name)
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -75,32 +75,17 @@ class ChangePWDView(APIView):
     """
     Представление для смены пароля пользователя
     """
-    serializer_class = ChangePWDSerializer
-    model = User
+
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self):
-        obj = self.request.user
-        return obj
-
     def post(self, request):
-        self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
+        serializer = ChangePWDSerializer(data=request.data)
 
         if serializer.is_valid():
-            if not self.object.check_password(serializer.data.get("currentPassword")):
-                return Response({"currentPassword": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
-            self.object.set_password(serializer.data.get("newPassword"))
-            self.object.save()
-            response = {
-                'status': 'success',
-                'code': status.HTTP_200_OK,
-                'message': 'Password updated successfully',
-                'data': []
-            }
-
-            return Response(response)
-
+            user = User.objects.get(username=request.user.username)
+            user.set_password(raw_password=request.data['newPassword'])
+            user.save()
+            return Response(status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
