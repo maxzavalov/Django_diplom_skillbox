@@ -1,11 +1,16 @@
 from django.shortcuts import render
+from models import Product
 from rest_framework.views import APIView
+from rest_framework import generics
+from serializers import ProductSerializer
 
 
-class ProductView(APIView):
+class ProductAPIView(generics.RetrieveAPIView):
+    """Представление для отображения продуктов"""
 
-    def get(self, *args, **kwargs):
-        pass
+    queryset = Product.objects.select_ralated('category', 'specification').prefetch_related('tags').all()
+    serializer_class = ProductSerializer
+
 
 
 

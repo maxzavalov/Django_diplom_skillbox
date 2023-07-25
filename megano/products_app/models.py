@@ -43,6 +43,7 @@ class ProductImage(models.Model):
                             default='products_app/images/product_images/default.png',
                             verbose_name='Ссылка')
     alt = models.CharField(max_length=128, verbose_name='Описание')
+    product = models.ForeignKey('Product', related_name="image", verbose_name="Продукт")
 
     class Meta:
         verbose_name = "Изображение товара"
@@ -58,8 +59,6 @@ class Product(models.Model):
     description = models.TextField(null=False, blank=True, verbose_name="Описание")
     fullDescription = models.TextField(null=False, blank=True, verbose_name="Полное описание")
     freeDelivery = models.BooleanField(default=False)
-    images = models.ForeignKey(
-        ProductImage, on_delete=models.CASCADE, related_name="product", verbose_name="Изображения")
     tags = models.ManyToManyField(Tag, related_name="product", verbose_name="Тэги")
     reviews = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="product", verbose_name="Отзывы")
     specifications = models.ForeignKey(

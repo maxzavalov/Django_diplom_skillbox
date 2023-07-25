@@ -3,12 +3,6 @@ from rest_framework import serializers
 from .models import Profile
 
 
-class AvatarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['avatar']
-
-
 class ProfileSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
 
