@@ -1,10 +1,16 @@
 from django.shortcuts import render
-from .models import Product, Review, Tag
+from .models import Product, Review, Tag, Category
 from rest_framework.views import APIView
 from rest_framework import generics
-from .serializers import ProductSerializer, ReviewSerializers, TagSerializer
+from .serializers import ProductSerializer, ReviewSerializers, TagSerializer, CategorySerializer
 from rest_framework import status, permissions
 from rest_framework.response import Response
+
+
+class CategoriesListAPIView(generics.ListAPIView):
+    """Представление для категорий и подкатегорий"""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 class ProductAPIView(generics.RetrieveAPIView):
@@ -38,9 +44,3 @@ class TagAPIView(generics.ListAPIView):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-
-
-
-
-
-
