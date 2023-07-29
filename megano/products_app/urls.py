@@ -9,4 +9,5 @@ urlpatterns = [
     path('product/<int:pk>/review', CreateReviewAPIView.as_view(), name="review"),
     path('tags', TagAPIView.as_view(), name="tags"),
     path('categories', CategoriesListAPIView.as_view(), name="categories"),
+    path('catalog', CategoriesListAPIView.as_view(), name="categories"),
 ]
