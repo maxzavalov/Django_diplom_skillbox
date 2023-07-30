@@ -73,6 +73,8 @@ class Product(models.Model):
     salePrice = models.DecimalField(
         max_digits=15, decimal_places=2, blank=True, null=True, verbose_name='Цена со скидкой')
     sale = models.BooleanField(default=False, verbose_name='Скидка')
+    dateFrom = models.DecimalField(blank=True, null=True, verbose_name="Дата начала")
+    dateTo = models.DecimalField(blank=True, null=True, verbose_name="Дата окончания")
 
     class Meta:
         verbose_name = "Продукт"
