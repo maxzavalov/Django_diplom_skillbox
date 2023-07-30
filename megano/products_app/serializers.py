@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from .models import Product, Review, Tag, Specification, ProductImage, Category
+from .models import Product, Review, Tag, Category
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """Сериализатор данных для модели Product"""
+
     class Meta:
         model = Product
         fields = ["id", "category", "price", "count", "date", "title", "description", "fullDescription",
@@ -10,18 +12,24 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializers(serializers.ModelSerializer):
+    """Сериализатор данных для модели Review"""
+
     class Meta:
         model = Review
         fields = ['text', 'rate', 'product', 'author', 'email', 'date']
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор данных для модели Tag"""
+
     class Meta:
         model = Tag
         fields = ['name']
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
+    """Сериализатор данных для модели Подкатегория"""
+
     class Meta:
         model = Category
         fields = ['id', 'title', 'image']
@@ -34,6 +42,8 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор данных для модели Категория"""
+
     subcategories = SubCategorySerializer(many=True, read_only=True)
     image = serializers.SerializerMethodField()
 
@@ -49,7 +59,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class CatalogProductSerializers(serializers.ModelSerializer):
-    """Товары со скидкой"""
+    """Сериализатор данных модели Product для отображения в каталоге"""
+
     tags = TagSerializer(many=True, read_only=True)
     images = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
@@ -63,21 +74,19 @@ class CatalogProductSerializers(serializers.ModelSerializer):
         ]
 
     def get_rating(self, obj):
-        """
-        Добавляем поле rating и считаем по обратной связи общее
-        количество отзывов, если есть то считаем средний рейтинг продукта
-        """
+        """Метод вычисляет среднюю оценку товара по отзывам"""
+
         if obj.reviews.count() > 0:
             res = [data.rate for data in obj.reviews.all()]
             return sum(res) / len(res)
         return 0
 
     def get_reviews(self, obj):
-        """Добавляем поле reviews и считаем по обратной связи общее количество отзывов"""
+        """Метод вычисляет количество отзывов о товаре"""
         return obj.reviews.count()
 
     def get_images(self, obj):
-        """Добавляем поле images и по обератной связи получаем все изображения данного продукта"""
+        """Метод возвращает ссылки на все изображения для экземпляра продукта"""
         return [
             {
                 'src': image.images.url,
@@ -88,7 +97,7 @@ class CatalogProductSerializers(serializers.ModelSerializer):
 
 
 class CatalogSerializers(serializers.ModelSerializer):
-    """Каталог товаров"""
+    """Сериализатор данных для каталога товаров"""
     items = CatalogProductSerializers(many=True, read_only=True)
 
     class Meta:
@@ -97,7 +106,7 @@ class CatalogSerializers(serializers.ModelSerializer):
 
 
 class SalesSerializers(serializers.ModelSerializer):
-    """Товары со скидкой"""
+    """Сериализатор данных для товаров со скидкой"""
     images = serializers.SerializerMethodField()
 
     class Meta:
@@ -107,7 +116,7 @@ class SalesSerializers(serializers.ModelSerializer):
         ]
 
     def get_images(self, obj):
-        """Добавляем поле images и по обератной связи получаем все изображения данного продукта"""
+        """Метод возвращает ссылки на все изображения для экземпляра продукта"""
         return [
             {
                 'src': image.images.url,

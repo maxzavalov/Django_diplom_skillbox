@@ -1,7 +1,5 @@
-from django import forms
 from django.contrib import admin
-from .models import Product, ProductImage, Specification, Review
-
+from .models import Tag, Product, ProductImage, Specification, Review, Category
 
 admin.site.register(Specification)
 
@@ -11,14 +9,38 @@ class ImagesProductInline(admin.StackedInline):
     extra = 1
 
 
+@admin.register(Tag)
+class TagsAdmin(admin.ModelAdmin):
+    """Регистрация модели Ярлык(Тэг) в админке"""
+
+    list_display = ('pk', 'name',)
+    list_display_links = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    """Регистрация модели Категория в админке"""
+
+    list_display = ("__str__",)
+    fieldsets = (
+        ('Категория', {
+            'fields': (('title', 'image'),)
+        }),
+    )
+
+
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
+    """Регистрация модели Отзыв в админке"""
     list_display = ('author', 'text', 'rate', 'date')
     readonly_fields = ('author',)
 
 
 @admin.register(Product)
 class ProductsAdmin(admin.ModelAdmin):
+    """Регистрация модели Продукт в админке"""
+
     search_fields = ('title', 'category')
     list_filter = ('popular', 'limited', 'sale')
     list_display = ('title', 'category', 'price', 'sale', 'popular', 'limited', 'freeDelivery', 'date', 'count')
@@ -41,7 +63,7 @@ class ProductsAdmin(admin.ModelAdmin):
         }),
         ('Дата и время действия скидки', {
             'classes': ('collapse',),
-            'fields': (('dateFrom', 'dateTo', ),),
+            'fields': (('dateFrom', 'dateTo',),),
         }),
         ('Теги и категории', {
             'fields': (('tags', 'category'),)

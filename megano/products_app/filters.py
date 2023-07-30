@@ -1,6 +1,6 @@
-from models import Product
+from .models import Product
 from django_filters import rest_framework as filters
-from django.db.models import F, Count, Avg, QuerySet
+from django.db.models import Count, Avg, QuerySet
 
 
 class ProductFilter(filters.FilterSet):
@@ -13,11 +13,12 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
+        fields = ['min_price', 'max_price', 'title', 'free_delivery']
 
     def filter_queryset(self, queryset) -> QuerySet:
         """
-        Проверяем из get запроса какие фильтры к нам пришли и фильтруем
-        queryset: модель Products
+        Метод получает выбранные пользователем фильтры из get-запроса и
+        фильтрует queryset модели Product
         """
         queryset = super().filter_queryset(queryset)
 

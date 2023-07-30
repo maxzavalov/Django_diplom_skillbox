@@ -16,7 +16,7 @@ class Category(models.Model):
 
 
 class Specification(models.Model):
-    """Модель спецификации товара"""
+    """Модель спецификации"""
 
     name = models.CharField(max_length=150, null=False, blank=True, verbose_name="Параметр")
     value = models.CharField(max_length=200, null=False, blank=True, verbose_name="Значение")
@@ -26,17 +26,17 @@ class Specification(models.Model):
         verbose_name_plural = "Спецификации"
 
 
-
-
-
 class Tag(models.Model):
-    """Модель для описания ярлыков(тэгов)"""
+    """Модель ярлыков(тэгов)"""
 
     name = models.CharField(max_length=128, null=False, blank=True)
 
     class Meta:
         verbose_name = "Тэг"
         verbose_name_plural = "Тэги"
+
+    def __str__(self):
+        return self.name
 
 
 class ProductImage(models.Model):
@@ -65,7 +65,7 @@ class Product(models.Model):
     fullDescription = models.TextField(null=False, blank=True, verbose_name="Полное описание")
     freeDelivery = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, related_name="product", verbose_name="Тэги")
-    specifications = models.ForeignKey(
+    specification = models.ForeignKey(
         Specification, on_delete=models.CASCADE, related_name="product", verbose_name="Спецификации")
     rating = models.PositiveIntegerField(blank=True, null=True, verbose_name="Рейтинг")
     popular = models.BooleanField(default=False, verbose_name='Популярный')
@@ -73,8 +73,8 @@ class Product(models.Model):
     salePrice = models.DecimalField(
         max_digits=15, decimal_places=2, blank=True, null=True, verbose_name='Цена со скидкой')
     sale = models.BooleanField(default=False, verbose_name='Скидка')
-    dateFrom = models.DecimalField(blank=True, null=True, verbose_name="Дата начала")
-    dateTo = models.DecimalField(blank=True, null=True, verbose_name="Дата окончания")
+    dateFrom = models.DateTimeField(blank=True, null=True, verbose_name="Дата начала")
+    dateTo = models.DateTimeField(blank=True, null=True, verbose_name="Дата окончания")
 
     class Meta:
         verbose_name = "Продукт"
@@ -85,7 +85,7 @@ class Product(models.Model):
 
 
 class Review(models.Model):
-    """Модель для хранения отзывов о товаре"""
+    """Модель отзывов"""
 
     author = models.CharField(max_length=150, null=False, blank=True, verbose_name="Автор")
     email = models.EmailField(max_length=128, blank=True, null=True)
@@ -97,3 +97,4 @@ class Review(models.Model):
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
+
