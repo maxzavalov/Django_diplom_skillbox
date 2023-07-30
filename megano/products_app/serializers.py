@@ -28,7 +28,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
-    """Сериализатор данных для модели Подкатегория"""
+    """Сериализатор данных для модели Category"""
 
     class Meta:
         model = Category
@@ -42,8 +42,6 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор данных для модели Категория"""
-
     subcategories = SubCategorySerializer(many=True, read_only=True)
     image = serializers.SerializerMethodField()
 
