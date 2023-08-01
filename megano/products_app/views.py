@@ -18,7 +18,7 @@ class CategoriesListAPIView(generics.ListAPIView):
 class ProductAPIView(generics.RetrieveAPIView):
     """Представление для отображения продуктов"""
 
-    queryset = Product.objects.select_related('category', 'specification').\
+    queryset = Product.objects.select_related('category', 'specification'). \
         prefetch_related('tags').all()
     serializer_class = ProductSerializer
 

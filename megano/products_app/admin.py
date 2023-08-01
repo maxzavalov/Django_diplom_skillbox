@@ -25,7 +25,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ("__str__",)
     fieldsets = (
         ('Категория', {
-            'fields': (('title', 'image'),)
+            'fields': (('title', 'image', 'parent'),)
         }),
     )
 

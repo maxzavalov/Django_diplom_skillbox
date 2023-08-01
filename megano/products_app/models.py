@@ -10,6 +10,13 @@ class Category(models.Model):
 
     title = models.CharField(max_length=150, null=False, verbose_name="Название")
     image = models.ImageField(upload_to='catalog_images', verbose_name="Изображение")
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="subcategories",
+        verbose_name="Родительская категория")
 
     def __str__(self):
         return self.title
