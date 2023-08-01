@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_filters',
     'auth_app.apps.MyAuthConfig',
     'products_app.apps.AppProductsConfig',
+    'orders_app.apps.OrdersAppConfig',
     'frontend',
 
 ]
