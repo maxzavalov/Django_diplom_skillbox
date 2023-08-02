@@ -9,10 +9,14 @@ from .paginations import CustomPagination
 from .filters import ProductFilter
 
 
-class CategoriesListAPIView(generics.ListAPIView):
+class CategoriesListAPIView(APIView):
     """Представление для категорий и подкатегорий"""
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    def get(self, request):
+        """Get catalog menu"""
+        categories = Category.objects.filter(parent=None)
+        serialized = CategorySerializer(categories, many=True)
+        print(serialized.data)
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 class ProductAPIView(generics.RetrieveAPIView):

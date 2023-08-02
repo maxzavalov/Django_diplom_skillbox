@@ -27,6 +27,22 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
+class SubCategorySerializer(serializers.ModelSerializer):
+    """Сериализатор данных для модели Категория"""
+
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ['id', 'title', 'image']
+
+    def get_image(self, obj):
+        return {
+            'src': obj.image.url,
+            'alt': obj.image.name,
+        }
+
+
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор данных для модели Категория"""
 
@@ -38,10 +54,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'subcategories']
 
     def get_subcategories(self, obj):
-        if obj.parent is None:
-            return [CategorySerializer(cat).data for cat in Category.objects.filter(parent=obj)]
-        else:
-            return []
+        return SubCategorySerializer(obj.subcategories.all(), many=True).data
 
     def get_image(self, obj):
         return {
