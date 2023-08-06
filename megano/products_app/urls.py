@@ -13,7 +13,7 @@ app_name = "products_app"
 
 urlpatterns = [
     path('product/<int:pk>', ProductAPIView.as_view(), name="product"),
-    path('product/<int:pk>/review', CreateReviewAPIView.as_view(), name="review"),
+    path('product/<int:pk>/reviews', CreateReviewAPIView.as_view(), name="review"),
     path('tags', TagAPIView.as_view(), name="tags"),
     path('categories', CategoriesListAPIView.as_view(), name="categories"),
     path('catalog', CatalogListAPIView.as_view(), name="catalog"),

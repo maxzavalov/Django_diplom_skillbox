@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -46,20 +47,6 @@ class Tag(models.Model):
         return self.name
 
 
-class ProductImage(models.Model):
-    """ Модель изображений товара"""
-
-    src = models.ImageField(upload_to='products_app/images/product_images',
-                            default='products_app/images/product_images/default.png',
-                            verbose_name='Ссылка')
-    alt = models.CharField(max_length=128, verbose_name='Описание')
-    product = models.ForeignKey('Product', related_name="image", on_delete=models.CASCADE, verbose_name="Продукт")
-
-    class Meta:
-        verbose_name = "Изображение товара"
-        verbose_name_plural = "Изображения товара"
-
-
 class Product(models.Model):
     """Модель продукта"""
 
@@ -91,17 +78,39 @@ class Product(models.Model):
         return self.title
 
 
+class ProductImage(models.Model):
+    """ Модель изображений товара"""
+
+    src = models.ImageField(upload_to='product_images', verbose_name='Ссылка')
+    alt = models.CharField(max_length=128, default="Image alt string", verbose_name='Описание')
+    product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE, verbose_name="Продукт")
+
+    class Meta:
+        verbose_name = "Изображение товара"
+        verbose_name_plural = "Изображения товара"
+
+
 class Review(models.Model):
     """Модель отзывов"""
 
-    author = models.CharField(max_length=150, null=False, blank=True, verbose_name="Автор")
-    email = models.EmailField(max_length=128, blank=True, null=True)
-    text = models.TextField(null=False, blank=True, verbose_name="Текст")
-    rate = models.PositiveIntegerField(blank=True, null=True, verbose_name="Рейтинг")
-    date = models.DateTimeField(auto_now_add=True, null=True, verbose_name="Дата")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="review", verbose_name="Продукт")
+    RATE_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews", verbose_name="Пользователь")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='reviews', verbose_name="Продукт"
+    )
+    text = models.CharField(blank=True, max_length=1000)
+    rate = models.IntegerField(choices=RATE_CHOICES)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'user id: {self.user.pk} about product id: {self.product.pk}'
 
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
-

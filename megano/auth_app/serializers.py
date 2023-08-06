@@ -4,6 +4,7 @@ from .models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """Сериализатор данных для модели Профиля"""
     avatar = serializers.SerializerMethodField()
 
     class Meta:
@@ -17,5 +18,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class ChangePWDSerializer(serializers.Serializer):
+    """Сериализатор для смены пароля пользователя"""
+
     currentPassword = serializers.CharField(max_length=200, required=True)
     newPassword = serializers.CharField(max_length=200, required=True)

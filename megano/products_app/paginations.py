@@ -1,18 +1,16 @@
-from rest_framework import pagination
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 
-class CustomPagination(pagination.PageNumberPagination):
-    """Пагинация"""
-    page_size = 1
-    page_query_param = 'currentPage'
-    max_page_size = 10
+class CustomPagination(PageNumberPagination):
+    """Пользовательский класс пагинации для каталога товаров"""
 
-    def get_paginated_response(self, data) -> Response:
+    page_size = 10
+    page_size_query_param = 'page_size'
+
+    def get_paginated_response(self, data):
         return Response({
             'items': data,
-            'lastPage': self.page.paginator.count,
             'currentPage': self.page.number,
-            'totalCount': self.page.paginator.count,
-
+            'lastPage': self.page.paginator.num_pages,
         })

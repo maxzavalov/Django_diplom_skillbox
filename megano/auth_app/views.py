@@ -55,6 +55,7 @@ def signOut(request):
 
 
 class ProfileApiView(APIView):
+    """Представление для отображения и обновления профиля пользователя"""
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -67,7 +68,7 @@ class ProfileApiView(APIView):
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -101,4 +102,4 @@ class ChangeAvatarView(APIView):
             profile.avatar = request.FILES["avatar"]
             profile.save()
             return Response(status.HTTP_200_OK)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

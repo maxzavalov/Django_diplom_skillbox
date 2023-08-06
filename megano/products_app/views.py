@@ -2,11 +2,13 @@ from rest_framework.views import APIView
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import ProductSerializer, ReviewSerializers, TagSerializer, CategorySerializer, \
-    CatalogProductSerializers, SalesSerializers
+from rest_framework.filters import OrderingFilter
+from django.db.models import Count, Avg, Sum
+from .serializers import ProductSerializer, ReviewSerializer, TagSerializer, CategorySerializer, \
+    CatalogProductSerializer, SalesSerializer
 from .models import Product, Review, Tag, Category
 from .paginations import CustomPagination
-from .filters import ProductFilter
+from .filters import CatalogFilter
 
 
 class CategoriesListAPIView(APIView):
@@ -15,36 +17,26 @@ class CategoriesListAPIView(APIView):
         """Get catalog menu"""
         categories = Category.objects.filter(parent=None)
         serialized = CategorySerializer(categories, many=True)
-        print(serialized.data)
         return Response(serialized.data, status=status.HTTP_200_OK)
 
 
-class ProductAPIView(generics.RetrieveAPIView):
+class ProductAPIView(APIView):
     """Представление для отображения продуктов"""
+    def get(self, request, pk=None):
+        product = generics.get_object_or_404(Product, pk=pk)
+        serialized = ProductSerializer(product)
+        return Response(serialized.data)
 
-    queryset = Product.objects.select_related('category', 'specification'). \
-        prefetch_related('tags').all()
-    serializer_class = ProductSerializer
 
-
-class CreateReviewAPIView(APIView):
+class CreateReviewAPIView(generics.CreateAPIView):
     """Представление для создания отзывов"""
-    permission_classes = permissions.IsAuthenticated
+    queryset = Review.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ReviewSerializer
 
-    def post(self, request):
-        """Создание экземпляра отзыва"""
-        serializer = ReviewSerializers(data=request.data)
-        if serializer.is_valid():
-            review = Review.objects.create(
-                author=request.user,
-                product=Product.objects.filter(pk=self.kwargs.get("pk")),
-                text=request.data.get('text'),
-                rate=request.data.get('rate'),
-                email=request.user.email
-            )
-            review.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def perform_create(self, serializer):
+        product = generics.get_object_or_404(Product, pk=self.kwargs.get('pk'))
+        serializer.save(user=self.request.user, product=product)
 
 
 class TagAPIView(generics.ListAPIView):
@@ -54,28 +46,39 @@ class TagAPIView(generics.ListAPIView):
 
 
 class CatalogListAPIView(generics.ListAPIView):
-    """Представление для отображения каталога продуктов"""
-    queryset = Product.objects.all()
-    serializer_class = CatalogProductSerializers
+    """Представление для каталога товаров"""
+    serializer_class = CatalogProductSerializer
+    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    filterset_class = CatalogFilter
+    ordering_fields = [
+        'price',
+        'rating_annotate',
+        'reviews_count',
+        'date'
+    ]
     pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = ProductFilter
+
+    def get_queryset(self):
+        return Product.objects.annotate(
+            reviews_count=Count('reviews'),
+            rating_annotate=Avg('reviews__rate'),
+        ).all()
 
 
 class ProductPopularListAPIView(generics.ListAPIView):
     """Представление для отображения популярных продуктов"""
     queryset = Product.objects.filter(popular=True)
-    serializer_class = CatalogProductSerializers
+    serializer_class = CatalogProductSerializer
 
 
 class ProductLimitedListAPIView(generics.ListAPIView):
     """Представление для отображения лимитированных продуктов"""
     queryset = Product.objects.filter(limited=True)
-    serializer_class = CatalogProductSerializers
+    serializer_class = CatalogProductSerializer
 
 
 class SaleAPIView(generics.ListAPIView):
     """Представление для отображения продуктов со скидкой"""
     queryset = Product.objects.filter(sale=True)
-    serializer_class = SalesSerializers
+    serializer_class = SalesSerializer
     pagination_class = CustomPagination

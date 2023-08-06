@@ -33,8 +33,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     """Регистрация модели Отзыв в админке"""
-    list_display = ('author', 'text', 'rate', 'date')
-    readonly_fields = ('author',)
+    list_display = ('text', 'rate', 'date')
 
 
 @admin.register(Product)
