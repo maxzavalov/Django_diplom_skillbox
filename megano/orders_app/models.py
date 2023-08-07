@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from products_app.models import Product
 
 
 class Order(models.Model):
@@ -32,3 +33,19 @@ class Order(models.Model):
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
+
+
+class OrderProduct(models.Model):
+    """Модель для связи продуктов с заказом"""
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="order_product", verbose_name="Продукт")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_product", verbose_name="Заказ")
+    count = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'Продукт в заказе'
+        verbose_name_plural = 'Продукты в заказе'
+
+    def __str__(self):
+        return str(self.product.title)
