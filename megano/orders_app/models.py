@@ -29,6 +29,7 @@ class Order(models.Model):
     deliveryType = models.CharField(max_length=15, choices=DELIVERY_TYPE, verbose_name="Тип доставки")
     paymentType = models.CharField(max_length=15, choices=PAYMENT_TYPE, verbose_name="Тип оплаты")
     status = models.CharField(max_length=15, choices=STATUS, verbose_name="Статус заказа")
+    products = models.ManyToManyField(Product, related_name="products", verbose_name="Продукты")
 
     class Meta:
         verbose_name = "Заказ"

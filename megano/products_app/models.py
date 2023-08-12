@@ -77,6 +77,13 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+    def average_rating(self):
+        if self.reviews.count() > 0:
+            res = [o.rate for o in self.reviews.all()]
+            res = sum(res) / len(res)
+            return res
+        return 0
+
 
 class ProductImage(models.Model):
     """ Модель изображений товара"""
