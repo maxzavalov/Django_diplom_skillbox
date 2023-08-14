@@ -27,8 +27,15 @@ class OrderApiView(APIView):
         data = {
             "orderId": order.pk,
         }
+
         order.products.set(products)
         order.save()
+        for product in request.data:
+            OrderProduct.objects.create(
+                order_id=order.pk,
+                product_id=product["id"],
+                count=product["count"]
+            )
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -36,13 +43,28 @@ class OrderDetailApiView(APIView):
     """Представление для получения деталей заказа и заполнения данных"""
 
     def get(self, request: Request, pk: int) -> Response:
-        order = generics.get_object_or_404(Order, pk=pk)
-        serialized = OrderSerializer(order)
-        return Response(serialized.data, status=status.HTTP_200_OK)
+        data = Order.objects.get(pk=pk)
+        serialized = OrderSerializer(data)
+        cart = Cart(request).cart
+        data = serialized.data
+
+        try:
+            products_in_order = data['products']
+            query = OrderProduct.objects.filter(order_id=pk)
+            prods = {obj.product.pk: obj.count for obj in query}
+            for prod in products_in_order:
+                prod['count'] = prods[prod['id']]
+        except Exception:
+            products_in_order = data['products']
+            for prod in products_in_order:
+                prod['count'] = cart[str(prod['id'])]['count']
+
+        return Response(data)
 
     def post(self, request: Request, pk: int) -> Response:
         order = generics.get_object_or_404(Order, pk=pk)
         data = request.data
+        print(data)
         order.fullName = data['fullName']
         order.phone = data['phone']
         order.email = data['email']
@@ -56,13 +78,6 @@ class OrderDetailApiView(APIView):
         else:
             if order.totalCost < 200:
                 order.totalCost += 20
-
-        for product in data['products']:
-            OrderProduct.objects.create(
-                order_id=order.pk,
-                product_id=product['id'],
-                count=product['count']
-            )
 
         order.save()
 
