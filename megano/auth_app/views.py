@@ -22,8 +22,7 @@ class SignInView(APIView):
 
         if user is not None:
             login(request, user)
-            return Response(
-                status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -50,12 +49,14 @@ class SignUpView(APIView):
 
 
 def signOut(request):
+    """Представление для выхода пользователя из аккаунта"""
     logout(request)
     return HttpResponse(status=200)
 
 
 class ProfileApiView(APIView):
     """Представление для отображения и обновления профиля пользователя"""
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -84,7 +85,7 @@ class ChangePWDView(APIView):
 
         if serializer.is_valid():
             user = User.objects.get(username=request.user.username)
-            user.set_password(raw_password=request.data['newPassword'])
+            user.set_password(raw_password=request.data["newPassword"])
             user.save()
             return Response(status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

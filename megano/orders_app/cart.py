@@ -24,7 +24,7 @@ class Cart(object):
             cart[product_id]["product_id"] = product_id
             cart[product_id]["price"] = float(product.price)
             cart[product_id]["total_price"] = (
-                    cart[product_id]["price"] * cart[product_id]["quantity"]
+                cart[product_id]["price"] * cart[product_id]["quantity"]
             )
 
         sorted_cart = sorted(cart.values(), key=lambda item: item["product_id"])

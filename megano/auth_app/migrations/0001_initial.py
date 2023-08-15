@@ -4,23 +4,36 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Avatar',
+            name="Avatar",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('src', models.ImageField(default='auth_app/avatars/default.png', upload_to='auth_app/avatars/user_avatars', verbose_name='Ссылка')),
-                ('alt', models.CharField(max_length=128, verbose_name='Описание')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "src",
+                    models.ImageField(
+                        default="auth_app/avatars/default.png",
+                        upload_to="auth_app/avatars/user_avatars",
+                        verbose_name="Ссылка",
+                    ),
+                ),
+                ("alt", models.CharField(max_length=128, verbose_name="Описание")),
             ],
             options={
-                'verbose_name': 'Аватар',
-                'verbose_name_plural': 'Аватары',
+                "verbose_name": "Аватар",
+                "verbose_name_plural": "Аватары",
             },
         ),
     ]

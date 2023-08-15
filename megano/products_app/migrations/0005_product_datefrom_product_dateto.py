@@ -4,20 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('products_app', '0004_alter_product_category'),
+        ("products_app", "0004_alter_product_category"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='dateFrom',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата начала'),
+            model_name="product",
+            name="dateFrom",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Дата начала"
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='dateTo',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата окончания'),
+            model_name="product",
+            name="dateTo",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Дата окончания"
+            ),
         ),
     ]

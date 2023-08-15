@@ -21,14 +21,12 @@ from django.conf.urls.static import static
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("api/", include("auth_app.urls"), name="auth_app"),
     path("api/", include("products_app.urls"), name="products_app"),
     path("api/", include("orders_app.urls"), name="orders_app"),
-    path("", include("frontend.urls"))
+    path("", include("frontend.urls")),
 ]
 
 if settings.DEBUG:
-    urlpatterns.extend(
-        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    )
+    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))

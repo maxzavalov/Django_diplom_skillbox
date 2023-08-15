@@ -17,7 +17,9 @@ class OrderApiView(APIView):
         return Response(serialized.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request):
-        products_in_order = [(obj["id"], obj["count"], obj["price"]) for obj in request.data]
+        products_in_order = [
+            (obj["id"], obj["count"], obj["price"]) for obj in request.data
+        ]
         print(request.data)
         products = Product.objects.filter(id__in=[obj[0] for obj in products_in_order])
         order = Order.objects.create(
@@ -32,9 +34,7 @@ class OrderApiView(APIView):
         order.save()
         for product in request.data:
             OrderProduct.objects.create(
-                order_id=order.pk,
-                product_id=product["id"],
-                count=product["count"]
+                order_id=order.pk, product_id=product["id"], count=product["count"]
             )
         return Response(data, status=status.HTTP_200_OK)
 
@@ -49,15 +49,15 @@ class OrderDetailApiView(APIView):
         data = serialized.data
 
         try:
-            products_in_order = data['products']
+            products_in_order = data["products"]
             query = OrderProduct.objects.filter(order_id=pk)
             prods = {obj.product.pk: obj.count for obj in query}
             for prod in products_in_order:
-                prod['count'] = prods[prod['id']]
+                prod["count"] = prods[prod["id"]]
         except Exception:
-            products_in_order = data['products']
+            products_in_order = data["products"]
             for prod in products_in_order:
-                prod['count'] = cart[str(prod['id'])]['count']
+                prod["count"] = cart[str(prod["id"])]["count"]
 
         return Response(data)
 
@@ -65,15 +65,15 @@ class OrderDetailApiView(APIView):
         order = generics.get_object_or_404(Order, pk=pk)
         data = request.data
         print(data)
-        order.fullName = data['fullName']
-        order.phone = data['phone']
-        order.email = data['email']
-        order.deliveryType = data['deliveryType']
-        order.city = data['city']
-        order.address = data['address']
-        order.paymentType = data['paymentType']
-        order.status = 'Ожидает оплаты'
-        if data['deliveryType'] == 'express':
+        order.fullName = data["fullName"]
+        order.phone = data["phone"]
+        order.email = data["email"]
+        order.deliveryType = data["deliveryType"]
+        order.city = data["city"]
+        order.address = data["address"]
+        order.paymentType = data["paymentType"]
+        order.status = "Ожидает оплаты"
+        if data["deliveryType"] == "express":
             order.totalCost += 50
         else:
             if order.totalCost < 200:
@@ -153,10 +153,10 @@ class PaymentApiView(APIView):
 
     def post(self, request: Request, pk: int) -> Response:
         order = Order.objects.get(pk=pk)
-        order.status = 'Оплачен'
+        order.status = "Оплачен"
         order.save()
-        cart = request.session.get('cart', [])
+        cart = request.session.get("cart", [])
         cart.clear()
-        request.session['cart'] = cart
+        request.session["cart"] = cart
         request.session.save()
         return Response(request.data, status=status.HTTP_200_OK)

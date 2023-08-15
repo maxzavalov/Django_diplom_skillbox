@@ -4,21 +4,21 @@ from .models import Product, Review, Tag, Category, Specification, ProductImage
 
 class ImagesProductSerializer(serializers.ModelSerializer):
     """Сериализатор данных для модели изображений продукта"""
+
     class Meta:
         model = ProductImage
-        fields = ['src', 'alt']
+        fields = ["src", "alt"]
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор данных для модели Отзыв(Review)"""
-    author = serializers.ReadOnlyField(source='user.profile.fullname')
-    email = serializers.ReadOnlyField(source='user.profile.email')
+
+    author = serializers.ReadOnlyField(source="user.profile.fullname")
+    email = serializers.ReadOnlyField(source="user.profile.email")
 
     class Meta:
         model = Review
-        fields = (
-            'author', 'email', 'text', 'rate', 'date'
-        )
+        fields = ("author", "email", "text", "rate", "date")
 
 
 class SpecificationSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class SpecificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Specification
-        fields = ['name', 'value']
+        fields = ["name", "value"]
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -43,8 +43,20 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'category', 'price', 'count', 'date', 'title', 'description', 'fullDescription',
-            'freeDelivery', 'images', 'tags', 'specification', 'rating', 'reviews'
+            "id",
+            "category",
+            "price",
+            "count",
+            "date",
+            "title",
+            "description",
+            "fullDescription",
+            "freeDelivery",
+            "images",
+            "tags",
+            "specification",
+            "rating",
+            "reviews",
         ]
 
     images = ImagesProductSerializer(many=True)
@@ -72,12 +84,12 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'title', 'image']
+        fields = ["id", "title", "image"]
 
     def get_image(self, obj):
         return {
-            'src': obj.image.url,
-            'alt': obj.image.name,
+            "src": obj.image.url,
+            "alt": obj.image.name,
         }
 
 
@@ -89,15 +101,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'title', 'image', 'subcategories']
+        fields = ["id", "title", "image", "subcategories"]
 
     def get_subcategories(self, obj):
         return SubCategorySerializer(obj.subcategories.all(), many=True).data
 
     def get_image(self, obj):
         return {
-            'src': obj.image.url,
-            'alt': obj.image.name,
+            "src": obj.image.url,
+            "alt": obj.image.name,
         }
 
 
@@ -111,8 +123,18 @@ class CatalogProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            "id", "category", "price", "count", "date", "title", "description", "freeDelivery", "images", "tags",
-            "reviews", "rating"
+            "id",
+            "category",
+            "price",
+            "count",
+            "date",
+            "title",
+            "description",
+            "freeDelivery",
+            "images",
+            "tags",
+            "reviews",
+            "rating",
         ]
 
     def get_reviews(self, obj):
@@ -121,13 +143,14 @@ class CatalogProductSerializer(serializers.ModelSerializer):
 
 class SalesSerializer(serializers.ModelSerializer):
     """Сериализатор данных для товаров со скидкой"""
+
     images = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = [
-            'id', 'price', 'salePrice', 'dateFrom', 'dateTo', 'title', 'images'
-        ]
+        fields = ["id", "price", "salePrice", "dateFrom", "dateTo", "title", "images"]
 
     def get_images(self, obj):
-        return [{'src': img.images.src, 'alt': img.images.alt} for img in obj.images.all()]
+        return [
+            {"src": img.images.src, "alt": img.images.alt} for img in obj.images.all()
+        ]

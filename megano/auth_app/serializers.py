@@ -5,6 +5,7 @@ from .models import Profile
 
 class ProfileSerializer(serializers.ModelSerializer):
     """Сериализатор данных для модели Профиля"""
+
     avatar = serializers.SerializerMethodField()
 
     class Meta:
@@ -13,7 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_avatar(self, obj):
         if obj.avatar:
-            return {'src': obj.avatar.url, 'alt': obj.avatar.name}
+            return {"src": obj.avatar.url, "alt": obj.avatar.name}
         return None
 
 
