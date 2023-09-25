@@ -20,23 +20,25 @@ class OrderApiView(APIView):
         products_in_order = [
             (obj["id"], obj["count"], obj["price"]) for obj in request.data
         ]
-        print(request.data)
         products = Product.objects.filter(id__in=[obj[0] for obj in products_in_order])
-        order = Order.objects.create(
-            user=request.user,
-            totalCost=sum(i[1] * float(i[2]) for i in products_in_order),
-        )
-        data = {
-            "orderId": order.pk,
-        }
-
-        order.products.set(products)
-        order.save()
-        for product in request.data:
-            OrderProduct.objects.create(
-                order_id=order.pk, product_id=product["id"], count=product["count"]
+        if request.user.is_authenticated:
+            order = Order.objects.create(
+                user=request.user,
+                totalCost=sum(i[1] * float(i[2]) for i in products_in_order),
             )
-        return Response(data, status=status.HTTP_200_OK)
+            data = {
+                "orderId": order.pk,
+            }
+
+            order.products.set(products)
+            order.save()
+            for product in request.data:
+                OrderProduct.objects.create(
+                    order_id=order.pk, product_id=product["id"], count=product["count"]
+                )
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderDetailApiView(APIView):
@@ -135,7 +137,7 @@ class CartDetailView(APIView):
 
     def delete(self, request):
         product_id = request.data.get("id")
-        quantity = request.data.get("count", 1)
+        quantity = int(request.data.get("count", 1))
 
         try:
             product = Product.objects.get(id=product_id)

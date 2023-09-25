@@ -14,7 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_avatar(self, obj):
         if obj.avatar:
-            return {"src": obj.avatar.url, "alt": obj.avatar.name}
+            return {"src": obj.avatar.url, "alt": 'Image alt string'}
         return None
 
 

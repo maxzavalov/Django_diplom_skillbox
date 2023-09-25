@@ -144,13 +144,13 @@ class CatalogProductSerializer(serializers.ModelSerializer):
 class SalesSerializer(serializers.ModelSerializer):
     """Сериализатор данных для товаров со скидкой"""
 
-    images = serializers.SerializerMethodField()
+    images = ImagesProductSerializer(many=True)
 
     class Meta:
         model = Product
         fields = ["id", "price", "salePrice", "dateFrom", "dateTo", "title", "images"]
 
-    def get_images(self, obj):
-        return [
-            {"src": img.images.src, "alt": img.images.alt} for img in obj.images.all()
-        ]
+
+
+
+

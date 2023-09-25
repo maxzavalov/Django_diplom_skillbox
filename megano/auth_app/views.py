@@ -13,8 +13,7 @@ class SignInView(APIView):
     """Представление для авторизации пользователя"""
 
     def post(self, request) -> Response:
-        serialized_data = list(request.POST.keys())[0]
-        user_data = json.loads(serialized_data)
+        user_data = json.loads(request.body)
         username = user_data.get("username")
         password = user_data.get("password")
 
@@ -22,7 +21,7 @@ class SignInView(APIView):
 
         if user is not None:
             login(request, user)
-            return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -31,8 +30,7 @@ class SignUpView(APIView):
     """Представление для регистрации пользователя"""
 
     def post(self, request) -> Response:
-        serialized_data = list(request.POST.keys())[0]
-        user_data = json.loads(serialized_data)
+        user_data = json.loads(request.body)
         name = user_data.get("name")
         username = user_data.get("username")
         password = user_data.get("password")

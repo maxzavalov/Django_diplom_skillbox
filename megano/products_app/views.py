@@ -27,6 +27,19 @@ class CategoriesListAPIView(APIView):
         return Response(serialized.data, status=status.HTTP_200_OK)
 
 
+class CategoryListAPIView(generics.ListAPIView):
+
+    queryset = Product.objects.all()
+    serializer_class = CatalogProductSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self, pk: int):
+        category = Category.obgects.get(pk=pk)
+        queryset = Product.objects.filter(category=category)
+        return queryset
+
+
+
 class ProductAPIView(APIView):
     """Представление для отображения продуктов"""
 
@@ -58,17 +71,11 @@ class TagAPIView(generics.ListAPIView):
 class CatalogListAPIView(generics.ListAPIView):
     """Представление для каталога товаров"""
 
+    queryset = Product.objects.all()
     serializer_class = CatalogProductSerializer
-    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend]
     filterset_class = CatalogFilter
-    ordering_fields = ["price", "rating_annotate", "reviews_count", "date"]
     pagination_class = CustomPagination
-
-    def get_queryset(self):
-        return Product.objects.annotate(
-            reviews_count=Count("reviews"),
-            rating_annotate=Avg("reviews__rate"),
-        ).all()
 
 
 class ProductPopularListAPIView(generics.ListAPIView):
@@ -85,9 +92,10 @@ class ProductLimitedListAPIView(generics.ListAPIView):
     serializer_class = CatalogProductSerializer
 
 
-class SaleAPIView(generics.ListAPIView):
+class SaleAPIView(APIView):
     """Представление для отображения продуктов со скидкой"""
 
-    queryset = Product.objects.filter(sale=True)
-    serializer_class = SalesSerializer
-    pagination_class = CustomPagination
+    def get(self, request):
+        sales = Product.objects.filter(sale=True)
+        serialized = SalesSerializer(sales, many=True)
+        return Response({"items": serialized.data})

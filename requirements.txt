@@ -1,7 +1,6 @@
 asgiref==3.7.2
 astroid==2.15.6
 dill==0.3.7
-diploma-frontend==0.6
 Django==4.2.3
 django-filter==23.2
 djangorestframework==3.14.0
